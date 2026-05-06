@@ -256,7 +256,10 @@ namespace Rasterizer
 	// \brief	Clear frame buffer to a checkerboard pattern.
 	void FrameBuffer::ClearCheckerboard(Color colors[2], unsigned int size)
 	{
+		Clear(colors[0]);//set everything to the first color
 
+		//with a for loop set every other square  to the second colour
+		
 	}
 
 	// ---------------------------------------------------------------------------
