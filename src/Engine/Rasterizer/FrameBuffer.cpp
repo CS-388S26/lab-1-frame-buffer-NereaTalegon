@@ -17,20 +17,26 @@ namespace Rasterizer
 	unsigned int		FrameBuffer::frameBufferHeight = 0;
 
 	// ---------------------------------------------------------------------------
-	// TODO
 	// \fn		Delete
 	// \brief	Free the memory allocated in the function above. 
 	void FrameBuffer::Delete()
-	{
-
+	{	
+		if (frameBuffer) {
+			delete[] frameBuffer; //free allocated array
+			frameBuffer = nullptr;
+		}
 	}
 
 	// ---------------------------------------------------------------------------
-	// TODO
 	// \fn		Allocate
 	// \brief	Allocate memory for the frame buffer given by the width and height. 
 	bool FrameBuffer::Allocate(unsigned int width, unsigned int height)
 	{
+		Delete();
+		//array of chars creating a rect based on width and height
+		frameBuffer = new unsigned char[width * height * COLOR_COMP];
+		frameBufferWidth = width;
+		frameBufferHeight = height;
 		return true;
 	}
 
@@ -72,30 +78,27 @@ namespace Rasterizer
 	}
 
 	// ---------------------------------------------------------------------------
-	// TODO	
 	// \fn		GetBufferData
 	// \brief	Returns the pointer to the frame buffer variable
 	unsigned char *	FrameBuffer::GetBufferData()
 	{
-		return {};
+		return frameBuffer;
 	}
 
 	// ---------------------------------------------------------------------------
-	// TODO	
 	// \fn		GetWidth
 	// \brief	Returns the width of the frame buffer.
 	unsigned int		FrameBuffer::GetWidth()
 	{
-		return {};
+		return frameBufferWidth;
 	}
 
-	// ---------------------------------------------------------------------------
-	// TODO	
+	// --------------------------------------------------------------------------
 	// \fn		GetHeight
 	// \brief	Returns the height of the frame buffer.
 	unsigned int		FrameBuffer::GetHeight()
 	{
-		return {};
+		return frameBufferHeight;
 	}
 
 	// ---------------------------------------------------------------------------
@@ -104,7 +107,7 @@ namespace Rasterizer
 	// \brief	Sets the entire frame buffer to the provided color.
 	void FrameBuffer::Clear(const Color & c)
 	{
-
+		Clear(c.r * 255.0f, c.g * 255.0f, c.b * 255.0f, c.a * 255.0f);
 	}
 
 	// ---------------------------------------------------------------------------
@@ -113,7 +116,13 @@ namespace Rasterizer
 	// \brief	Sets the entire frame buffer to the provided color in rgb format
 	void FrameBuffer::Clear(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
 	{
-
+		int max = frameBufferWidth * frameBufferHeight * COLOR_COMP;
+		for (unsigned i = 0; i < max; i += COLOR_COMP) {
+			frameBuffer[i + 0] = r;
+			frameBuffer[i + 1] = g;
+			frameBuffer[i + 2] = b;
+			frameBuffer[i + 3] = a;
+		}
 	}
 
 	// ---------------------------------------------------------------------------
@@ -122,6 +131,14 @@ namespace Rasterizer
 	// \brief	Sets the pixel at position x, y to the provided color. 
 	void FrameBuffer::SetPixel(unsigned int x, unsigned int y, unsigned char r, unsigned char g, unsigned char b, unsigned char a)
 	{
+		if (x >= frameBufferWidth || y >= frameBufferHeight)
+			return;
+
+		int index = (x + y * frameBufferWidth) * COLOR_COMP;
+		frameBuffer[index + 0] + r;
+		frameBuffer[index + 1] + g;
+		frameBuffer[index + 2] + b;
+		frameBuffer[index + 3] + a;
 
 	}
 
@@ -131,7 +148,7 @@ namespace Rasterizer
 	// \brief	Sets the pixel at position x, y to the provided color. 
 	void FrameBuffer::SetPixel(unsigned int x, unsigned int y, const Color& c)
 	{
-
+		SetPixel(x, y, c.r * 255.0f, c.g * 255.0f, c.b * 255.0f, c.a * 255.0f);
 	}
 
 	// ---------------------------------------------------------------------------
@@ -140,7 +157,17 @@ namespace Rasterizer
 	// \brief	Returns the color of the pixel at position x, y.
 	Color FrameBuffer::GetPixel(unsigned int x, unsigned int y)
 	{		
-		return {};
+		if (x >= frameBufferWidth || y >= frameBufferHeight)
+			return Color();
+		int index = (x + y * frameBufferWidth) * COLOR_COMP;
+		Color c;
+
+		c.r = frameBuffer[index + 0]/ 255.0f;
+		c.g = frameBuffer[index + 1] / 255.0f;
+		c.b = frameBuffer[index + 2] / 255.0f;
+		c.a = frameBuffer[index + 3] / 255.0f;
+
+		return c;
 	}
 
 	// ---------------------------------------------------------------------------
